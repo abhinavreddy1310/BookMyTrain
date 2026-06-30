@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMyTrain - Smart Train Booking System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Background Effects -->
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <!-- Header -->
+    <header>
+        <h1>🚆 BookMyTrain</h1>
+        <p>  Smart Train Reservation System</p>
+    </header>
+
+    <!-- Booking Section -->
+    <section class="booking-card">
+
+        <div class="field">
+            <label>From Station</label>
+            <input
+                type="text"
+                id="from"
+                autocomplete="off"
+                placeholder="Enter Source Station"
+            >
+            <div id="fromSuggestions" class="suggestions"></div>
+        </div>
+
+        <button id="swapBtn" title="Swap Stations">
+            ⇄
+        </button>
+
+        <div class="field">
+            <label>To Station</label>
+            <input
+                type="text"
+                id="to"
+                autocomplete="off"
+                placeholder="Enter Destination Station"
+            >
+            <div id="toSuggestions" class="suggestions"></div>
+        </div>
+
+        <div class="field">
+            <label>Travel Date</label>
+            <input type="date" id="travelDate">
+        </div>
+
+        <div class="field">
+            <label>Passengers</label>
+            <input
+                type="number"
+                id="passengers"
+                min="1"
+                max="6"
+                value="1"
+            >
+        </div>
+
+        <div class="field">
+            <label>Class</label>
+            <select id="trainClass">
+                <option>Sleeper</option>
+                <option>First AC</option>
+                <option>AC 2-Tier</option>
+                <option>AC 3-Tier</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Train Type</label>
+            <select id="trainType">
+                <option>Express</option>
+                <option>Superfast</option>
+            </select>
+        </div>
+
+        <button class="search-btn" onclick="searchTrains()">
+            🔍 Search Trains
+        </button>
+
+    </section>
+
+    <!-- Popular Routes -->
+    <section class="popular-section">
+
+        <h2>Popular Routes</h2>
+
+        <div class="route-grid">
+
+            <div class="route-card">
+                Hyderabad → Bangalore
+            </div>
+
+            <div class="route-card">
+                Chennai → Kolkata
+            </div>
+
+            <div class="route-card">
+                Secunderabad → Tirupati
+            </div>
+
+            <div class="route-card">
+                Vijayawada → Delhi
+            </div>
+
+            <div class="route-card">
+                Secunderabad → Mumbai
+            </div>
+
+            <div class="route-card">
+                Guntur → Gujarat
+            </div>
+
+            <div class="route-card">
+                Warangal → Kolkata
+            </div>
+
+            <div class="route-card">
+                Hyderabad → Tirupati
+            </div>
+
+            <div class="route-card">
+                Mumbai → Vijayawada
+            </div>
+
+            <div class="route-card">
+                Chennai → Delhi
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Train Results -->
+    <section id="trainResults"></section>
+
+    <!-- Passenger Modal -->
+    <div class="modal" id="passengerModal">
+
+        <div class="modal-content">
+
+            <h2>Passenger Details</h2>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Passenger Name"
+            >
+
+            <input
+                type="number"
+                id="age"
+                placeholder="Age"
+            >
+
+            <select id="gender">
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+
+            <input
+                type="tel"
+                id="phone"
+                placeholder="Mobile Number"
+            >
+
+            <button onclick="showSeats()">
+                Continue
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Seat Selection Modal -->
+    <div class="modal" id="seatModal">
+
+        <div class="modal-content">
+
+            <h2>Select Your Seat</h2>
+
+            <div class="seat-legend">
+                <span class="available-box"></span> Available
+                <span class="booked-box"></span> Booked
+                <span class="selected-box"></span> Selected
+            </div>
+
+            <div id="seatContainer"></div>
+
+            <button onclick="confirmBooking()">
+                Continue To Payment
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Payment Modal -->
+<div class="modal" id="paymentModal">
+
+    <div class="modal-content">
+
+        <h2>💳 Payment Gateway</h2>
+
+        <div id="fareSummary"></div>
+
+        <label>Select Payment Method</label>
+
+        <select id="paymentMethod" onchange="togglePaymentFields()">
+
+            <option value="UPI">
+                UPI / Google Pay / PhonePe / Paytm
+            </option>
+
+            <option value="Credit Card">
+                Credit Card
+            </option>
+
+            <option value="Debit Card">
+                Debit Card
+            </option>
+
+        </select>
+
+        <!-- UPI Section -->
+
+        <div id="upiSection">
+
+            <input
+                type="text"
+                id="upiId"
+                placeholder="Enter UPI ID (example@okaxis)"
+            >
+
+        </div>
+
+        <!-- Card Section -->
+
+        <div id="cardSection" style="display:none;">
+
+            <input
+                type="text"
+                id="cardHolder"
+                placeholder="Card Holder Name"
+            >
+
+            <input
+                type="text"
+                id="cardNumber"
+                maxlength="16"
+                placeholder="Card Number"
+            >
+
+            <input
+                type="text"
+                id="expiryDate"
+                placeholder="MM/YY"
+            >
+
+            <input
+                type="password"
+                id="cvv"
+                maxlength="3"
+                placeholder="CVV"
+            >
+
+        </div>
+
+        <button onclick="processPayment()">
+            Pay Now
+        </button>
+
+    </div>
+
+</div>
+
+    <!-- Ticket Modal -->
+    <div class="modal" id="ticketModal">
+
+        <div class="modal-content ticket-modal">
+
+            <h2>🎉 Booking Confirmed</h2>
+
+            <div id="ticket"></div>
+
+            <div class="ticket-actions">
+
+                <button onclick="window.print()">
+                    Print Ticket
+                </button>
+
+                <button onclick="closeTicket()">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            © 2026 BookMyTrain | Smart Railway Reservation System
+        </p>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
